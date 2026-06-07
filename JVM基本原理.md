@@ -299,30 +299,32 @@ ZGC（JDK 11 实验，JDK 15 生产可用，JDK 21 增强）：
 
 ```java
 // ✅ 虚拟线程 + Semaphore 控制并发度
-Semaphore semaphore = new Semaphore(100);
-try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-    for (int i = 0; i < 10000; i++) {
-        executor.submit(() -> {
+void main() {
+   Semaphore semaphore = new Semaphore(100);
+   try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+      for (int i = 0; i < 10000; i++) {
+         executor.submit(() -> {
             semaphore.acquire();
             try {
-                return httpClient.send(request);  // I/O 阻塞 → 自动卸载
+               return httpClient.send(request);  // I/O 阻塞 → 自动卸载
             } finally {
-                semaphore.release();
+               semaphore.release();
             }
-        });
-    }
+         });
+      }
+   }
 }
 ```
 
 #### Q7: JDK 17+ 面试高频新特性
 
-| 特性 | JDK 版本 | 说明 |
-|------|---------|------|
-| Record 类 | 16 | 不可变数据载体，自动生成 equals/hashCode/toString |
-| Sealed Classes | 17 | 限制哪些类可以继承/实现 |
-| Pattern Matching for switch | 21 | `switch(obj) { case String s -> ... }` |
-| Virtual Threads | 21 | 虚拟线程 |
-| Sequenced Collections | 21 | 统一有序集合的首尾访问接口 |
+| 特性                          | JDK 版本 | 说明                                     |
+|-----------------------------|--------|----------------------------------------|
+| Record 类                    | 16     | 不可变数据载体，自动生成 equals/hashCode/toString  |
+| Sealed Classes              | 17     | 限制哪些类可以继承/实现                           |
+| Pattern Matching for switch | 21     | `switch(obj) { case String s -> ... }` |
+| Virtual Threads             | 21     | 虚拟线程                                   |
+| Sequenced Collections       | 21     | 统一有序集合的首尾访问接口                          |
 
 #### Q8: Metaspace OOM 怎么排查？
 
